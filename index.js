@@ -35,7 +35,7 @@ function translate(text, targetLang) {
 				agent: require('./proxy.js').proxy
 					? new HttpsProxyAgent(require('./proxy').proxy)
 					: undefined,
-				body: 'f.req=' + encodeURIComponent(translateBody),
+				body: 'f.req=' + encodeURI(translateBody),
 				method: 'POST',
 				mode: 'cors',
 				credentials: 'include',
@@ -47,7 +47,11 @@ function translate(text, targetLang) {
 					try {
 						// console.log(line);
 						const json = JSON.parse(line)[0][2];
-						const result = JSON.parse(json)[1][0][0][5][0][0];
+						const translations = JSON.parse(json)[1][0][0][5];
+						let result='';
+						translations.forEach((translation) => {
+							result=result+translation[0];
+						});
 						resolve(result);
 					} catch (error) {
 						undefined;
