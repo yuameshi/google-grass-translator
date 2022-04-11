@@ -1,0 +1,17 @@
+{
+	"name": "google-shengcao-fanyi-bot",
+	"version": "1.0.0",
+	"description": "谷歌生草翻译机",
+	"main": "index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"start": "node index.js"
+	},
+	"keywords": [],
+	"author": "Yuameshi",
+	"license": "MIT",
+	"dependencies": {
+		"https-proxy-agent": "^5.0.0",
+		"node-fetch": "^2.6.7"
+	}
+}
