@@ -3,6 +3,12 @@ const targetLang = process.argv[3] || 'zh-CN';
 const HttpsProxyAgent = require('https-proxy-agent');
 const fs = require('fs');
 const fetch = require('node-fetch');
+if (translateText==undefined) {
+	console.log('Error: No text to translate.');
+	console.log('Usage: "Text to translate" [Target Language]');
+	fs.appendFileSync('translate.log', `[${new Date().toISOString()}][Init] Error: No text to translate.\n`);
+	process.exit(1);
+}
 console.log('Translating: ', translateText);
 fs.appendFileSync('translate.log', `[${new Date().toISOString()}][Init] Source: ${translateText}\n`);
 console.log('Target Lang: ', targetLang);
