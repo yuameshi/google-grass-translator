@@ -1,2 +1,7 @@
 node_modules
 translate.log
+google-grass-translator-linux-arm64
+google-grass-translator-linux-x64
+google-grass-translator-macos-arm64
+google-grass-translator-macos-x64
+google-grass-translator-win-x64.exe

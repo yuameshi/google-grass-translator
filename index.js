@@ -14,6 +14,11 @@ fs.appendFileSync('translate.log', `[${new Date().toISOString()}][Init] Source: 
 console.log('Target Lang: ', targetLang);
 fs.appendFileSync('translate.log', `[${new Date().toISOString()}][Init] Target Language: ${targetLang}\n`);
 function translate(text, targetLang) {
+	if (text.length>5000) {
+		console.log('Error: Text too long.');
+		fs.appendFileSync('translate.log', `[${new Date().toISOString()}][Translate] [Loop:${i}]	[To ${langs[i]}]	Error: Text too long.\n`);
+		process.exit(1);
+	}
 	return new Promise(function (resolve) {
 		const translateBody = JSON.stringify([
 			[
@@ -83,9 +88,6 @@ function translate(text, targetLang) {
 		// 	});
 		// });
 	});
-}
-function parseGoogleTranslateCallback(object) {
-	return JSON.parse(JSON.parse(object)[0][2])[1][0][0][5][0][0];
 }
 const langs = require('./langs.js').langs;
 let outputText = translateText;

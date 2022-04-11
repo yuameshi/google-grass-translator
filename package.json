@@ -3,9 +3,11 @@
 	"version": "1.0.0",
 	"description": "全自动谷歌生草翻译机",
 	"main": "index.js",
+	"bin": "index.js",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"start": "node index.js"
+		"start": "node index.js",
+		"build": "pkg -t macos-x64,win-x64,linux-x64,linux-arm64,macos-arm64 --compress GZip ./ --output \"google-grass-translator\""
 	},
 	"repository": {
 		"type": "git",
