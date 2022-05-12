@@ -91,19 +91,41 @@ function translate(text, targetLang) {
 }
 const langs = require('./langs.js').langs;
 let outputText = translateText;
+
+// 无延迟版
+// let loop = 0;
+// langs.forEach(async (lang) => {
+// 	let from = outputText;
+// 	outputText = await translate(outputText, lang);
+// 	fs.appendFileSync('translate.log', `[${new Date().toISOString()}][Translate] [Loop:${loop}]	[To ${lang}]	Result: ${outputText}	Source: ${from}\n`);
+// 	console.log(outputText);
+// 	loop++;
+// });
+// let endingInterval = setInterval(() => {
+// 	if (loop == langs.length) {
+// 		translate(outputText, targetLang).then((res) => {
+// 			fs.appendFileSync('translate.log', `[${new Date().toISOString()}][Translate] [Ending]	[To ${targetLang}]	Result: ${res}\n`);
+// 			outputText = res;
+// 			console.log(outputText);
+// 			clearInterval(endingInterval);
+// 		});
+// 	}
+// }, 1000);
+
+// 每次延迟5s
 for (let i = 0; i < langs.length; i++) {
 	setTimeout(() => {
 		translate(outputText, langs[i]).then((res) => {
-			fs.appendFileSync('translate.log', `[${new Date().toISOString()}][Translate] [Loop:${i}]	[To ${langs[i]}]	Result: ${res}\n`);
+			fs.appendFileSync('translate.log', `[${new Date().toISOString()}][Translate] [Loop:${i}]	[To ${langs[i]}]	Result: ${res}	Source: ${outputText}\n`);
 			outputText = res;
 			console.log(outputText);
 		});
-	}, 5000 * i);
+	}, 1000 * i);
 }
 setTimeout(() => {
 	translate(outputText, targetLang).then((res) => {
-		fs.appendFileSync('translate.log', `[${new Date().toISOString()}][Translate] [Ending]	[To ${targetLang}]	Result: ${res}\n`);
+		fs.appendFileSync('translate.log', `[${new Date().toISOString()}][Translate] [Ending]	[To ${targetLang}]	Result: ${res}	Source: ${outputText}\n`);
 		outputText = res;
 		console.log(outputText);
 	});
-}, 5000 * (langs.length + 1));
+}, 1000 * (langs.length + 1));
