@@ -32,10 +32,10 @@ function translate(text, targetLang) {
 		]);
 		// console.log(translateBody);
 		fetch(
-			'https://translate.google.cn/_/TranslateWebserverUi/data/batchexecute?rpcids=MkEWBc&source-path=%2F&f.sid=-2684615221053975002&bl=boq_translate-webserver_20220406.13_p0&hl=zh-CN&soc-app=1&soc-platform=1&soc-device=1&_reqid=682466&rt=c',
+			'https://translate.google.com/_/TranslateWebserverUi/data/batchexecute?rpcids=MkEWBc&source-path=%2F&f.sid=-2684615221053975002&bl=boq_translate-webserver_20220406.13_p0&hl=zh-CN&soc-app=1&soc-platform=1&soc-device=1&_reqid=682466&rt=c',
 			{
 				headers: require('./headers.js').headers,
-				referrer: 'https://translate.google.cn/',
+				referrer: 'https://translate.google.com/',
 				referrerPolicy: 'origin',
 				agent: require('./proxy.js').proxy
 					? new HttpsProxyAgent(require('./proxy').proxy)
