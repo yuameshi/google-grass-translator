@@ -1,38 +1,39 @@
 const translateText = process.argv[2];
 const targetLang = process.argv[3] || 'zh-CN';
-import HttpsProxyAgent from 'https-proxy-agent'
-import fs from 'fs';
+import HttpsProxyAgent from 'https-proxy-agent';
+import { appendFile } from 'fs/promises';
 import { headers } from './headers.js'
 import { langs } from './langs.js';
 import { proxy } from './proxy.js';
 import fetch from 'node-fetch';
+
+
 if (translateText==undefined) {
 	console.log('Error: No text to translate.');
 	console.log('Usage: "Text to translate" [Target Language]');
-	fs.appendFileSync('translate.log', `[${new Date().toISOString()}][Init] Error: No text to translate.\n`);
-	process.exit(1);
+	appendFile('translate.log', `[${new Date().toISOString()}][Init] Error: No text to translate.\n`)
+		.then(process.exit(1));
 }
 console.log('Translating: ', translateText);
-fs.appendFileSync('translate.log', `[${new Date().toISOString()}][Init] Source: ${translateText}\n`);
+appendFile('translate.log', `[${new Date().toISOString()}][Init] Source: ${translateText}\n`);
 console.log('Target Lang: ', targetLang);
-fs.appendFileSync('translate.log', `[${new Date().toISOString()}][Init] Target Language: ${targetLang}\n`);
-function translate(text, targetLang) {
+appendFile('translate.log', `[${new Date().toISOString()}][Init] Target Language: ${targetLang}\n`);
+async function translate(text, targetLang) {
 	if (text.length>5000) {
 		console.log('Error: Text too long.');
-		fs.appendFileSync('translate.log', `[${new Date().toISOString()}][Translate] [Loop:${i}]	[To ${langs[i]}]	Error: Text too long.\n`);
+		await appendFile('translate.log', `[${new Date().toISOString()}][Translate] [Loop:${i}]	[To ${langs[i]}]	Error: Text too long.\n`);
 		process.exit(1);
 	}
-	return new Promise(function (resolve) {
-		const translateBody = JSON.stringify([
-			[
-				[
-					'MkEWBc',
-					JSON.stringify([[text, 'auto', targetLang, true], [null]]),
-					null,
-					'generic',
-				],
-			],
-		]);
+		// const translateBody = JSON.stringify([
+		// 	[
+		// 		[
+		// 			'MkEWBc',
+		// 			JSON.stringify([[text, 'auto', targetLang, true], [null]]),
+		// 			null,
+		// 			'generic',
+		// 		],
+		// 	],
+		// ]);
 		// console.log(translateBody);
 // 		fetch(
 // 			'https://translate.google.com/_/TranslateWebserverUi/data/batchexecute?rpcids=MkEWBc&source-path=%2F&f.sid=-2684615221053975002&bl=boq_translate-webserver_20220406.13_p0&hl=zh-CN&soc-app=1&soc-platform=1&soc-device=1&_reqid=682466&rt=c',
@@ -71,26 +72,22 @@ function translate(text, targetLang) {
 // 				// resolve(json[0][0][0]);
 // 			});
 // 		});
-		fetch(
-			`https://translate.google.com/translate_a/single?client=at&sl=auto&tl=${targetLang}&dt=t&q=${text}`,
-			{
-				headers: headers,
-				agent: proxy
-					? new HttpsProxyAgent(proxy)
-					: undefined,
-				referrer: 'https://translate.google.com/',
-				referrerPolicy: 'origin',
-				body: null,
-				method: 'GET',
-				mode: 'cors',
-				credentials: 'include',
-			}
-		).then((res) => {
-			res.json().then((json) => {
-				resolve(json[0][0][0]);
-			});
-		});
-	});
+	const ret = await (await fetch(
+		`https://translate.google.com/translate_a/single?client=at&sl=auto&tl=${targetLang}&dt=t&q=${text}`,
+		{
+			headers: headers,
+			agent: proxy
+				? new HttpsProxyAgent(proxy)
+				: undefined,
+			referrer: 'https://translate.google.com/',
+			referrerPolicy: 'origin',
+			body: null,
+			method: 'GET',
+			mode: 'cors',
+			credentials: 'include',
+		}
+	)).json();
+	return ret[0][0][0];
 }
 let outputText = translateText;
 
@@ -116,18 +113,16 @@ let outputText = translateText;
 
 // 每次延迟5s
 for (let i = 0; i < langs.length; i++) {
-	setTimeout(() => {
-		translate(outputText, langs[i]).then((res) => {
-			fs.appendFileSync('translate.log', `[${new Date().toISOString()}][Translate] [Loop:${i}]	[To ${langs[i]}]	Result: ${res}	Source: ${outputText}\n`);
-			outputText = res;
-			console.log(outputText);
-		});
-	}, 1000 * i);
-}
-setTimeout(() => {
-	translate(outputText, targetLang).then((res) => {
-		fs.appendFileSync('translate.log', `[${new Date().toISOString()}][Translate] [Ending]	[To ${targetLang}]	Result: ${res}	Source: ${outputText}\n`);
+	setTimeout(async () => {
+		const res = await translate(outputText, langs[i])
+		await appendFile('translate.log', `[${new Date().toISOString()}][Translate] [Loop:${i}]	[To ${langs[i]}]	Result: ${res}	Source: ${outputText}\n`);
 		outputText = res;
 		console.log(outputText);
-	});
+	}, 1000 * i);
+}
+setTimeout(async () => {
+	const res = await translate(outputText, targetLang)
+	await appendFile('translate.log', `[${new Date().toISOString()}][Translate] [Ending]	[To ${targetLang}]	Result: ${res}	Source: ${outputText}\n`);
+	outputText = res;
+	console.log(outputText);
 }, 1000 * (langs.length + 1));
