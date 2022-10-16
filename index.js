@@ -1,8 +1,11 @@
 const translateText = process.argv[2];
 const targetLang = process.argv[3] || 'zh-CN';
-const HttpsProxyAgent = require('https-proxy-agent');
-const fs = require('fs');
-const fetch = require('node-fetch');
+import HttpsProxyAgent from 'https-proxy-agent'
+import fs from 'fs';
+import { headers } from './headers.js'
+import { langs } from './langs.js';
+import { proxy } from './proxy.js';
+import fetch from 'node-fetch';
 if (translateText==undefined) {
 	console.log('Error: No text to translate.');
 	console.log('Usage: "Text to translate" [Target Language]');
@@ -71,9 +74,9 @@ function translate(text, targetLang) {
 		fetch(
 			`https://translate.google.com/translate_a/single?client=at&sl=auto&tl=${targetLang}&dt=t&q=${text}`,
 			{
-				headers: require('./headers.js').headers,
-				agent: require('./proxy.js').proxy
-					? new HttpsProxyAgent(require('./proxy').proxy)
+				headers: headers,
+				agent: proxy
+					? new HttpsProxyAgent(proxy)
 					: undefined,
 				referrer: 'https://translate.google.com/',
 				referrerPolicy: 'origin',
@@ -89,7 +92,6 @@ function translate(text, targetLang) {
 		});
 	});
 }
-const langs = require('./langs.js').langs;
 let outputText = translateText;
 
 // 无延迟版
