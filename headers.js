@@ -24,7 +24,7 @@
 // 	Referer: 'https://translate.google.com/'
 // 	'Referrer-Policy': 'origin',
 // };
-exports.headers = {
+export const headers = {
 	accept: '*/*',
 	'accept-language': 'zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6',
 	'sec-ch-ua':

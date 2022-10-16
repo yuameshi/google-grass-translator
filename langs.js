@@ -1,4 +1,4 @@
-exports.langs = [
+export const langs = [
 	'sq',
 	'ar',
 	'am',
